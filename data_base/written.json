@@ -1,0 +1,17 @@
+{
+	"situps": 42,
+	"pushups": 7.0,
+	"run_distance": 1.95,
+
+	"bicep_curl": 0,
+	"hammer_curl": 0,
+	"dumbell_row": 0,
+
+	"bench_press": 0,
+	"chest_flies": 0,
+	"overhead_tricep_extension": 0,
+	"overhead_dumbell_shoulder_press": 0,
+	"lateral_shoulder_press": 0,
+
+	"squats": 0
+}
