@@ -16,6 +16,8 @@ const SCALE_FACTOR: f32 = 50.0;
 const SITUPS_BIAS: f32 = 1.0;
 const PUSHUPS_BIAS: f32 = 10.0;
 const DISTANCE_BIAS: f32 = 50.0;
+const BICEP_CURL_BIAS: f32 = 2.5;
+const HAMMER_CURL_BIAS: f32 = 7.5;
 fn round_order(number: f32, order: i32) -> f32 {
     (number * f32::powi(10.0, order)).floor() / f32::powi(10.0, order)
 }
@@ -26,7 +28,13 @@ fn determine_raw_exp(data: WorkoutData) -> f32 {
     let raw_situps = (data.situps * SCALE_FACTOR as i32) as f32 * f32::powf(1.1, SITUPS_BIAS);
     let raw_pushups = data.pushups * SCALE_FACTOR * f32::powf(1.1, PUSHUPS_BIAS);
     let raw_distance = data.run_distance * SCALE_FACTOR * f32::powf(1.1, DISTANCE_BIAS);
-    round_order(raw_situps + raw_pushups + raw_distance, 2)
+    let raw_bicep_curls = data.bicep_curls as f32 * SCALE_FACTOR * f32::powf(1.1, BICEP_CURL_BIAS);
+    let raw_hammer_curls =
+        data.hammer_curls as f32 * SCALE_FACTOR * f32::powf(1.1, HAMMER_CURL_BIAS);
+    round_order(
+        raw_situps + raw_pushups + raw_distance + raw_bicep_curls + raw_hammer_curls,
+        2,
+    )
 }
 fn determine_level(exp: f32) -> (i32, f32) {
     let level = f32::log((exp / 1000.0) + 1.0, 1.75);
@@ -44,6 +52,8 @@ struct WorkoutData {
     situps: i32,
     pushups: f32,
     run_distance: f32, // Miles
+    bicep_curls: i32,
+    hammer_curls: i32,
 }
 fn window_conf() -> Conf {
     Conf {
@@ -92,10 +102,20 @@ async fn main() -> io::Result<()> {
                 Some(value) => value.as_f64().unwrap(),
                 None => 0.0,
             } as f32;
+            let bicep_curls = match (unwrapped_value.get("bicep_curl")) {
+                Some(value) => value.as_i64().unwrap(),
+                None => 0,
+            } as i32;
+            let hammer_curls = match (unwrapped_value.get("hammer_curl")) {
+                Some(value) => value.as_i64().unwrap(),
+                None => 0,
+            } as i32;
             routine_struct = Some(WorkoutData {
                 situps,
                 pushups,
                 run_distance,
+                bicep_curls,
+                hammer_curls,
             })
         }
         let unwrapped_routine = routine_struct.unwrap();

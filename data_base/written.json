@@ -1,11 +1,10 @@
 {
 	"situps": 42,
 	"pushups": 7.0,
-	"run_distance": 1.95,
+	"run_distance": 2.85,
 
-	"bicep_curl": 0,
-	"hammer_curl": 0,
-	"dumbell_row": 0,
+	"bicep_curl": 20,
+	"hammer_curl": 6,
 
 	"bench_press": 0,
 	"chest_flies": 0,
