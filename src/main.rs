@@ -18,6 +18,8 @@ const PUSHUPS_BIAS: f32 = 10.0;
 const DISTANCE_BIAS: f32 = 50.0;
 const BICEP_CURL_BIAS: f32 = 2.5;
 const HAMMER_CURL_BIAS: f32 = 7.5;
+const BENCH_PRESS_BIAS: f32 = 2.0;
+const CHEST_FLIES_BIAS: f32 = 2.0;
 fn round_order(number: f32, order: i32) -> f32 {
     (number * f32::powi(10.0, order)).floor() / f32::powi(10.0, order)
 }
@@ -31,8 +33,10 @@ fn determine_raw_exp(data: WorkoutData) -> f32 {
     let raw_bicep_curls = data.bicep_curls as f32 * SCALE_FACTOR * f32::powf(1.1, BICEP_CURL_BIAS);
     let raw_hammer_curls =
         data.hammer_curls as f32 * SCALE_FACTOR * f32::powf(1.1, HAMMER_CURL_BIAS);
+    let raw_bench_press = data.bench_press as f32 * SCALE_FACTOR * f32::powf(1.1, BENCH_PRESS_BIAS);
+    let raw_chest_flies = data.chest_flies as f32 * SCALE_FACTOR * f32::powf(1.1,CHEST_FLIES_BIAS);
     round_order(
-        raw_situps + raw_pushups + raw_distance + raw_bicep_curls + raw_hammer_curls,
+        raw_situps + raw_pushups + raw_distance + raw_bicep_curls + raw_hammer_curls + raw_bench_press + raw_chest_flies,
         2,
     )
 }
@@ -54,6 +58,8 @@ struct WorkoutData {
     run_distance: f32, // Miles
     bicep_curls: i32,
     hammer_curls: i32,
+    bench_press: i32,
+    chest_flies: i32,
 }
 fn window_conf() -> Conf {
     Conf {
@@ -110,12 +116,22 @@ async fn main() -> io::Result<()> {
                 Some(value) => value.as_i64().unwrap(),
                 None => 0,
             } as i32;
+            let bench_press = match (unwrapped_value.get("bench_press")) {
+                Some(value) => value.as_i64().unwrap(),
+                None => 0,
+            } as i32;
+            let chest_flies = match (unwrapped_value.get("chest_flies")) {
+                Some(value) => value.as_i64().unwrap(),
+                None => 0,
+            } as i32;
             routine_struct = Some(WorkoutData {
                 situps,
                 pushups,
                 run_distance,
                 bicep_curls,
                 hammer_curls,
+                bench_press,
+                chest_flies,
             })
         }
         let unwrapped_routine = routine_struct.unwrap();
